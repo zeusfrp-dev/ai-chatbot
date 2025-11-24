@@ -1,12 +1,3 @@
-// Registro do Service Worker (Mantido)
-if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js')
-            .then(reg => console.log('SW registrado:', reg))
-            .catch(err => console.log('Falha no SW:', err));
-    });
-}
-
 // 🔑 CHAVE API DO GEMINI INCORPORADA AQUI
 const GEMINI_API_KEY = "AIzaSyC2m-wa4mc_jmreO3OtHKmII2AToztAqIA"; 
 
