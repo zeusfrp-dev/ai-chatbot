@@ -1,53 +1,51 @@
-﻿const CACHE_NAME = "ai-chatbot-v1";
+const CACHE_NAME = 'my-pwa-cache-v2'; // <--- AQUI ESTÁ A MUDANÇA
 const urlsToCache = [
-  "./",
-  "./index.html",
-  "./style.css",
-  "./app.js",
-  "./manifest.json"
+  '/',
+  './index.html',
+  './style.css',
+  './app.js',
+  './manifest.json',
+  './sw.js',
+  './assets/icon-192.png',
+  './assets/icon-512.png'
 ];
 
-self.addEventListener("install", (event) => {
+self.addEventListener('install', event => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(urlsToCache))
+    caches.open(CACHE_NAME)
+      .then(cache => {
+        console.log('Cache aberto');
+        return cache.addAll(urlsToCache);
+      })
   );
 });
 
-self.addEventListener("fetch", (event) => {
-  const request = event.request;
-  const url = new URL(request.url);
-
-  if (url.pathname.startsWith('/api/') || request.method !== "GET") {
-    return; 
-  }
-
+self.addEventListener('fetch', event => {
   event.respondWith(
-    caches.match(request).then((cachedResponse) => {
-      if (cachedResponse) return cachedResponse;
-
-      return fetch(request).then((networkResponse) => {
-        if (!networkResponse || networkResponse.status !== 200 || (networkResponse.type !== "basic" && networkResponse.type !== "cors")) {
-          return networkResponse;
+    caches.match(event.request)
+      .then(response => {
+        // Cache hit - retorna a resposta
+        if (response) {
+          return response;
         }
-        const clonedResponse = networkResponse.clone();
-        caches.open(CACHE_NAME).then((cache) => cache.put(request, clonedResponse));
-        return networkResponse;
-      }).catch(() => {
-        if (request.mode === 'navigate') return caches.match("./index.html");
-      });
-    })
+        // Nenhuma resposta no cache - busca na rede
+        return fetch(event.request);
+      })
   );
 });
 
-self.addEventListener("activate", (event) => {
-  const whitelist = [CACHE_NAME];
+self.addEventListener('activate', event => {
+  const cacheWhitelist = [CACHE_NAME];
   event.waitUntil(
-    caches.keys().then((keys) =>
-      Promise.all(
-        keys.map((key) => {
-          if (!whitelist.includes(key)) return caches.delete(key);
+    caches.keys().then(cacheNames => {
+      return Promise.all(
+        cacheNames.map(cacheName => {
+          if (cacheWhitelist.indexOf(cacheName) === -1) {
+            // Remove caches antigos
+            return caches.delete(cacheName);
+          }
         })
-      )
-    )
+      );
+    })
   );
 });
