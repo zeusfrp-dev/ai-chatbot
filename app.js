@@ -7,8 +7,8 @@ if ('serviceWorker' in navigator) {
     });
 }
 
-// ⚠️ ATENÇÃO: COLOQUE SUA CHAVE AQUI, ENTRE AS ASPAS.
-const GEMINI_API_KEY = "SUA_CHAVE_API_AQUI"; 
+// 🔑 CHAVE API DO GEMINI INCORPORADA AQUI
+const GEMINI_API_KEY = "AIzaSyC2m-wa4mc_jmreO3OtHKmII2AToztAqIA"; 
 
 const form = document.getElementById('chat-form');
 const input = document.getElementById('user-input');
@@ -16,6 +16,7 @@ const chatContainer = document.getElementById('chat-container');
 let isLoading = false; // Estado para evitar múltiplas chamadas
 
 // Inicializa o cliente Gemini
+// Assume que GoogleGenAI está disponível globalmente via script no index.html
 const ai = new GoogleGenAI.GoogleGenAI({ apiKey: GEMINI_API_KEY });
 
 form.addEventListener('submit', async (e) => {
