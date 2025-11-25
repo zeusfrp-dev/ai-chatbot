@@ -4,11 +4,9 @@ const GEMINI_API_KEY = "AIzaSyC2m-wa4mc_jmreO3OtHKmII2AToztAqIA";
 const form = document.getElementById('chat-form');
 const input = document.getElementById('user-input');
 const chatContainer = document.getElementById('chat-container');
-let isLoading = false; // Estado para evitar múltiplas chamadas
+let isLoading = false; 
 
-// Inicializa o cliente Gemini
-// Assume que GoogleGenAI está disponível globalmente via script no index.html
-const ai = new GoogleGenAI.GoogleGenAI({ apiKey: GEMINI_API_KEY });
+// A linha 'const ai = new GoogleGenAI...' que pode estar falhando foi removida para este teste.
 
 form.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -18,26 +16,8 @@ form.addEventListener('submit', async (e) => {
     addMessage(text, 'user');
     input.value = '';
     
-    isLoading = true;
-    const loadingMessageId = addMessage('Digitando...', 'bot loading'); // Exibe mensagem de carregamento
-    
-    try {
-        const response = await ai.models.generateContent({
-            model: 'gemini-2.5-flash', 
-            contents: [{ role: 'user', parts: [{ text: text }] }]
-        });
-
-        // Remove a mensagem de carregamento e adiciona a resposta real
-        document.getElementById(loadingMessageId).remove();
-        addMessage(response.text, 'bot');
-
-    } catch (error) {
-        document.getElementById(loadingMessageId).remove();
-        addMessage('Erro na API: Não foi possível conectar com o servidor.', 'bot error');
-        console.error('API Error:', error);
-    } finally {
-        isLoading = false;
-    }
+    // ESTA É A MENSAGEM DE TESTE
+    addMessage('Resposta de Teste: O botão funciona!', 'bot'); 
 });
 
 let messageIdCounter = 0;
@@ -56,5 +36,5 @@ function addMessage(text, sender) {
     div.appendChild(bubble);
     chatContainer.appendChild(div);
     chatContainer.scrollTop = chatContainer.scrollHeight;
-    return id; // Retorna o ID para podermos remover a mensagem de carregamento
+    return id; 
 }
