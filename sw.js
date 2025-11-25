@@ -1,50 +1,59 @@
-const CACHE_NAME = 'my-pwa-cache-v2'; // <--- AQUI ESTÁ A MUDANÇA
+const CACHE_NAME = "my-pwa-cache-v3";
+
 const urlsToCache = [
-  '/',
-  './index.html',
-  './style.css',
-  './app.js',
-  './manifest.json',
-  './sw.js',
-  './assets/icon-192.png',
-  './assets/icon-512.png'
+  "./",
+  "./index.html",
+  "./style.css",
+  "./app.js",
+  "./manifest.json",
+  "./assets/icon-192.png",
+  "./assets/icon-512.png"
 ];
 
-self.addEventListener('install', event => {
+// INSTALAÇÃO
+self.addEventListener("install", event => {
   event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then(cache => {
-        console.log('Cache aberto');
-        return cache.addAll(urlsToCache);
-      })
+    caches.open(CACHE_NAME).then(cache => {
+      return cache.addAll(urlsToCache);
+    })
   );
 });
 
-self.addEventListener('fetch', event => {
+// INTERCEPTAÇÃO DE REQUISIÇÕES
+self.addEventListener("fetch", event => {
+  const url = new URL(event.request.url);
+
+  // ❗ NÃO interceptar requisições para seu backend no Render
+  if (url.origin.includes("ai-chatbot-3gyw.onrender.com")) {
+    return; // deixa ir direto para a internet
+  }
+
+  // ❗ NÃO interceptar POST
+  if (event.request.method !== "GET") {
+    return;
+  }
+
+  // Cache first
   event.respondWith(
-    caches.match(event.request)
-      .then(response => {
-        // Cache hit - retorna a resposta
-        if (response) {
-          return response;
-        }
-        // Nenhuma resposta no cache - busca na rede
-        return fetch(event.request);
-      })
+    caches.match(event.request).then(response => {
+      return (
+        response ||
+        fetch(event.request).catch(() => {
+          return caches.match("./index.html");
+        })
+      );
+    })
   );
 });
 
-self.addEventListener('activate', event => {
-  const cacheWhitelist = [CACHE_NAME];
+// ATIVAÇÃO
+self.addEventListener("activate", event => {
   event.waitUntil(
-    caches.keys().then(cacheNames => {
+    caches.keys().then(keys => {
       return Promise.all(
-        cacheNames.map(cacheName => {
-          if (cacheWhitelist.indexOf(cacheName) === -1) {
-            // Remove caches antigos
-            return caches.delete(cacheName);
-          }
-        })
+        keys
+          .filter(key => key !== CACHE_NAME)
+          .map(oldKey => caches.delete(oldKey))
       );
     })
   );
