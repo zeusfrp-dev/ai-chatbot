@@ -1,3 +1,4 @@
+// 🔑 CHAVE API DO GEMINI INCORPORADA AQUI
 const GEMINI_API_KEY = "AIzaSyC2m-wa4mc_jmreO3OtHKmII2AToztAqIA"; 
 
 const form = document.getElementById('chat-form');
@@ -45,6 +46,6 @@ function addMessage(text, sender) {
 
     div.appendChild(bubble);
     chatContainer.appendChild(div);
-    chatContainer.scrollTop = chatContainer.scrollHeight;
+    // A LINHA DE ROLAGEM FOI REMOVIDA AQUI!
     return id; 
 }
